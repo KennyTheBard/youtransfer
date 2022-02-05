@@ -1,19 +1,25 @@
-import { WtMessage } from './../../../api/src/types/types.d';
+import { WtUploadMeta } from './../types/types.d';
 import axios from 'axios'
+import fileDownload from 'js-file-download';
 
+export async function wtUpload(files: File[]){
+   const formData = new FormData();
+   files.forEach((file, idx) => formData.append(`file${idx}`, file, file.name));
 
-export async function wtUpload(files: File[]): Promise<WtMessage> {
-   const res = await axios.post(`http://localhost:3000/wt/upload`, files);
-   return res as unknown as WtMessage;
+   const res = await axios.post(`http://localhost:3000/wt/upload`, formData);
+   return res.data as unknown as WtUploadMeta;
 }
 
 export async function wtDownload(
    id: string,
    hash: string,
-   password: string
-): Promise<WtMessage> {
+   key: string
+){
    const res = await axios.post(`http://localhost:3000/wt/download`, {
-      id, hash, password
+      id, hash, key
+   }, {
+      responseType: 'blob'
    });
-   return res as unknown as WtMessage;
+
+   fileDownload(res.data, 'download.zip', 'application/zip');
 }

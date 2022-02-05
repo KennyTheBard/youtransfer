@@ -8,12 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WeTransferController = void 0;
 const express_1 = require("express");
 const archive_service_1 = require("../service/archive.service");
 const ecrypt_service_1 = require("../service/ecrypt.service");
 const wetransfer_service_1 = require("../service/wetransfer.service");
+const memory_streams_1 = __importDefault(require("memory-streams"));
 class WeTransferController {
     constructor() {
         this.path = '/wt';
@@ -27,16 +31,14 @@ class WeTransferController {
                 res.status(400).send();
                 return;
             }
-            const password = Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 5);
-            const data = (0, ecrypt_service_1.encrypt)(password, yield (0, archive_service_1.zip)(files));
-            console.log(password);
-            console.log((0, archive_service_1.unzip)((0, ecrypt_service_1.decrypt)(password, data)));
+            const key = (0, ecrypt_service_1.generatePassword)();
+            const data = (0, ecrypt_service_1.encrypt)(key, yield (0, archive_service_1.zip)(files));
             const msg = yield (new Promise((resolve, reject) => (0, wetransfer_service_1.wtUpload)(data)
                 .on('progress', (data) => {
-                console.log('PROGRESS', data);
+                // console.log('PROGRESS', data)
             })
                 .on('end', (data) => __awaiter(this, void 0, void 0, function* () {
-                console.log('PROGRESS', data);
+                // console.log('PROGRESS', data)
                 resolve(data);
             }))
                 .on('error', (error) => {
@@ -45,15 +47,23 @@ class WeTransferController {
             })));
             res.status(200).send({
                 id: msg.id,
-                hash: msg.security_hash
+                hash: msg.security_hash,
+                key: key.toString('hex')
             });
         });
         /**
          * POST /wt/download
          */
         this.download = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { id, hash, password } = req.body;
-            (yield (0, wetransfer_service_1.wtDownload)(id, hash)).pipe(res);
+            const { id, hash, key: hexKey } = req.body;
+            const key = Buffer.from(hexKey, 'hex');
+            const rs = (yield (0, wetransfer_service_1.wtDownload)(id, hash));
+            const ws = new memory_streams_1.default.WritableStream();
+            rs.pipe(ws);
+            rs.on('end', () => ws.end());
+            yield new Promise(resolve => ws.on('finish', () => resolve(null)));
+            res.status(200)
+                .send((0, ecrypt_service_1.decrypt)(key, ws.toBuffer()));
         });
         this.router.post('/upload', this.upload);
         this.router.post('/download', this.download);

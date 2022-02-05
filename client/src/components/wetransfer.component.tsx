@@ -16,9 +16,11 @@ export interface WeTransferProps {
 export class WeTransferComponent extends Component<WeTransferProps, any> {
 
    state: {
-      files: File[]
+      files: File[],
+      downloadUrl: string | null
    } = {
-         files: []
+         files: [],
+         downloadUrl: null
       };
 
    private handleFileDropOrSelect = (files: FileList) => {
@@ -37,12 +39,17 @@ export class WeTransferComponent extends Component<WeTransferProps, any> {
          // TODO: upload at least 1 file
          return;
       }
-      // const formData = new FormData();
-      // files.forEach((file, idx) => formData.append(`file${idx}`, file, file.name));
 
       const msg = await wtUpload(files);
 
       console.log(msg);
+      const url = `${window.location.protocol}//${window.location.host}/download/` +
+         `${msg.id}/${msg.hash}/${msg.key}`;
+
+      console.log(url);
+      this.setState({
+         downloadUrl: url
+      });
    }
 
    render() {
@@ -55,6 +62,7 @@ export class WeTransferComponent extends Component<WeTransferProps, any> {
                })
             }
             <Button onClick={this.onUploadClicked} variant="contained">Upload</Button>
+            {this.state.downloadUrl !== null ? this.state.downloadUrl : ''}
          </div>
       )
    }

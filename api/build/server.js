@@ -45,6 +45,7 @@ const wetransfer_controller_1 = require("./controllers/wetransfer.controller");
         const app = (0, express_1.default)();
         // add middleware
         app.use((0, cors_1.default)());
+        app.use(express_1.default.json());
         app.use(new middleware_1.ErrorHandlerMiddleware().use);
         app.use((0, express_fileupload_1.default)({
             limits: { fileSize: 2 * 1024 * 1024 * 1024 },

@@ -1,5 +1,6 @@
 import AdmZip, { IZipEntry } from 'adm-zip';
 import { FileArray } from 'express-fileupload';
+import { Blob } from 'buffer';
 
 export async function zip(files: FileArray): Promise<Buffer> {
    var zip = new AdmZip();
@@ -13,16 +14,21 @@ export async function zip(files: FileArray): Promise<Buffer> {
    return zip.toBuffer();
 }
 
-export async function unzip(buf: Buffer): Promise<File[]> {
-   var zip = new AdmZip(buf);
+// export function unzip(buf: Buffer): FormData[] {
+//    var zip = new AdmZip(buf);
 
-   return zip.getEntries().map(extractEntryToFile);
-}
+//    const form = new FormData();
+   
+//    zip.getEntries().forEach((entry: IZipEntry) => form.append(entry.))
+//    const files = fs.
+
+//    return zip.getEntries().map(extractEntryToFile);
+// }
 
 
-function extractEntryToFile(entry: IZipEntry): File {
-   return new File(
-      [entry.getData().buffer],
-      entry.entryName
-   );
-}
+// function extractEntryToFile(entry: IZipEntry): File {
+//    return new Blob(
+//       entry.getData().buffer,
+//       entry.entryName
+//    );
+// }

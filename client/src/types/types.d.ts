@@ -34,3 +34,9 @@ export type WtRecipient = {
    transfer_downloaded: boolean,
    bounced: boolean
 }
+
+export type WtUploadMeta = {
+   id: string,
+   hash: string,
+   key: string
+}

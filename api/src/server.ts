@@ -15,11 +15,11 @@ import { WeTransferController } from './controllers/wetransfer.controller';
 
       // add middleware
       app.use(cors());
+      app.use(express.json());
       app.use(new ErrorHandlerMiddleware().use);
       app.use(fileUpload({
          limits: { fileSize: 2 * 1024 * 1024 * 1024 },
       }));
-
 
       // init controllers
       [

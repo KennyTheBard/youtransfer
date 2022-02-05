@@ -1,9 +1,11 @@
 import { Request, Response, Router } from 'express';
-import { unzip, zip } from '../service/archive.service';
-import { decrypt, encrypt } from '../service/ecrypt.service';
+import { zip } from '../service/archive.service';
+import { decrypt, encrypt, generatePassword } from '../service/ecrypt.service';
 import { wtDownload, wtUpload } from '../service/wetransfer.service';
 import { WtMessage } from '../types/types';
-import { InstanceManager } from '../util/instance-manager';
+import streams from 'memory-streams';
+import fs from 'fs';
+
 
 export class WeTransferController {
 
@@ -26,19 +28,16 @@ export class WeTransferController {
          return;
       }
 
-      const password = Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 5);
-      const data = encrypt(password, await zip(files));
+      const key = generatePassword();
+      const data = encrypt(key, await zip(files));
 
-      console.log(password);
-      console.log(unzip(decrypt(password, data)));
-
-      const msg: WtMessage = await (new Promise((resolve, reject) => 
+      const msg: WtMessage = await (new Promise((resolve, reject) =>
          wtUpload(data)
             .on('progress', (data: WtMessage) => {
-               console.log('PROGRESS', data)
+               // console.log('PROGRESS', data)
             })
             .on('end', async (data: WtMessage) => {
-               console.log('PROGRESS', data)
+               // console.log('PROGRESS', data)
                resolve(data);
             })
             .on('error', (error: any) => {
@@ -49,7 +48,8 @@ export class WeTransferController {
 
       res.status(200).send({
          id: msg.id,
-         hash: msg.security_hash
+         hash: msg.security_hash,
+         key: key.toString('hex')
       })
    }
 
@@ -58,9 +58,21 @@ export class WeTransferController {
     */
    download = async (req: Request, res: Response) => {
       const {
-         id, hash, password
+         id, hash, key: hexKey
       } = req.body;
+      const key = Buffer.from(hexKey, 'hex');
 
-      (await wtDownload(id, hash)).pipe(res);
+      const rs = (await wtDownload(id, hash));
+      const ws = new streams.WritableStream();
+      rs.pipe(ws);
+
+      rs.on('end', () => ws.end());
+      await new Promise(resolve =>
+         ws.on('finish', () => resolve(null))
+      );
+
+
+      res.status(200)
+         .send(decrypt(key, ws.toBuffer()));
    }
 }
