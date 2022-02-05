@@ -3,10 +3,8 @@ import { Component } from 'react';
 import * as H from 'history';
 import { FileUploader } from 'react-drag-drop-files';
 import { Button } from '@mui/material';
-import { wtUpload } from '../services/wetransfer.service';
-import { unzip, zip } from '../services/archive.service';
-import { decrypt, encrypt } from '../services/ecrypt.service';
 import { WtMessage } from '../types/types';
+import { wtUpload } from '../services/api.service';
 
 
 
@@ -33,30 +31,18 @@ export class WeTransferComponent extends Component<WeTransferProps, any> {
       });
    };
 
-   private onUploadClicked = () => {
-      if (this.state.files.length === 0) {
+   private onUploadClicked = async () => {
+      const files = this.state.files;
+      if (files.length === 0) {
          // TODO: upload at least 1 file
          return;
       }
+      // const formData = new FormData();
+      // files.forEach((file, idx) => formData.append(`file${idx}`, file, file.name));
 
-      this.uploadToWeTransfer(this.state.files);
-   }
+      const msg = await wtUpload(files);
 
-   private uploadToWeTransfer = async (files: File[]) => {
-      const password = Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 5);
-      const data = encrypt(password, await zip(files));
-
-      console.log(password);
-      console.log(unzip(decrypt(password, data)));
-      
-      wtUpload(data)
-         .on('progress', (data: WtMessage) => {
-            console.log('PROGRESS', data)
-         })
-         .on('end', async (data: WtMessage) => {
-            console.log('PROGRESS', data)
-         })
-         .on('error', (error: any) => console.error('ERROR', error));;
+      console.log(msg);
    }
 
    render() {
