@@ -14,18 +14,30 @@ export interface UploadComponentProps {
 export class UploadComponent extends Component<UploadComponentProps, any> {
 
    state: {
-      files: File[],
+      files: File[];
+      hasUploaded: boolean;
    } = {
          files: [],
+         hasUploaded: false
       };
 
    constructor(props: UploadComponentProps) {
       super(props);
       this.onUploadCompleted = this.onUploadCompleted.bind(this);
+      this.onNewUpload = this.onNewUpload.bind(this);
    }
 
    private onUploadCompleted() {
-      this.setState({ files: [] })
+      this.setState({
+         files: [],
+         hasUploaded: true
+      });
+   }
+
+   private onNewUpload() {
+      this.setState({
+         hasUploaded: false
+      });
    }
 
    private handleFileDropOrSelect = (files: FileList) => {
@@ -49,19 +61,27 @@ export class UploadComponent extends Component<UploadComponentProps, any> {
       return (
          <div className="upload-container">
             <div className="upload-container-header">
-               <LogoComponent/>
+               <LogoComponent />
             </div>
+            {this.state.hasUploaded ? (
+               <p style={{textAlign: "center"}}>
+                  Your upload is complete!
+               </p>
+            ) : ''}
             <div className="upload-container-main">
                <div className="upload-container-row">
-                  <div className="file-drop-container">
-                     <FileUploader handleChange={this.handleFileDropOrSelect} name="file" multiple={true} />
-                  </div>
-                  <WetransferUploadComponent files={this.state.files} onUploadCompleted={this.onUploadCompleted}/>
+                  {this.state.hasUploaded ? '' : (
+                     <div className="file-drop-container">
+                        <FileUploader handleChange={this.handleFileDropOrSelect} name="file" multiple={true} />
+                     </div>
+                  )}
+
+                  <WetransferUploadComponent files={this.state.files} onUploadCompleted={this.onUploadCompleted} onNewUpload={this.onNewUpload}/>
                </div>
             </div>
             <div className="upload-container-footer">
                {this.state.files.map((file: File, idx: number) =>
-                  <FileRowComponent key={idx} file={file} onDelete={this.deleteFile(idx)}/>
+                  <FileRowComponent key={idx} file={file} onDelete={this.deleteFile(idx)} />
                )}
             </div>
          </div>

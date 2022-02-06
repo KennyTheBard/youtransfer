@@ -1,9 +1,10 @@
 
-import { useEffect } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { wetransferDownload } from '../services/api.service';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CircularProgress } from '@material-ui/core';
 import { LogoComponent } from './logo.component';
+import { Button } from '@mui/material';
 
 
 export interface WetransferDownloadProps {
@@ -13,18 +14,35 @@ export interface WetransferDownloadProps {
 
 export function WetransferDownloadComponent(props: WetransferDownloadProps) {
 
-   let { id, hash, key } = useParams();
+   const { id, hash, key } = useParams();
+   const [loading, setLoading] = useState<boolean>(true);
+   const navigate = useNavigate();
 
    useEffect(() => {
-      wetransferDownload(id!, hash!, key!);
+      setLoading(true);
+
+      wetransferDownload(id!, hash!, key!).then(() => {
+         setTimeout(() => setLoading(false), 500);
+      });
    }, []);
-   
 
    return (
       <div className="download-container">
-         <LogoComponent/>
-         <p>Your download will be ready any moment</p>
-         <CircularProgress/>
+         <LogoComponent />
+         {loading ?
+            <Fragment>
+               <p>Your download will be ready any moment</p>
+               <CircularProgress />
+            </Fragment>
+            :
+            <Fragment>
+               <p>Your download is ready</p>
+               <Button variant="contained" onClick={() => navigate('/')}>
+                  Go to Upload
+               </Button>
+            </Fragment>
+         }
+
       </div>
    )
 }

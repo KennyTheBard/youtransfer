@@ -1,18 +1,14 @@
 
 import { Fragment, Component } from 'react';
-import * as H from 'history';
-import { FileUploader } from 'react-drag-drop-files';
 import { Button, CircularProgress } from '@mui/material';
-import { WetransferMessage } from '../types/types';
 import { wetransferUpload } from '../services/api.service';
-import { LinearProgress } from '@mui/material';
 
 
 export interface WetransferUploadProps {
    // alert: (message: string) => void;
-   // history: H.History;
    files: File[];
    onUploadCompleted: () => void;
+   onNewUpload: () => void;
 }
 
 export class WetransferUploadComponent extends Component<WetransferUploadProps, any> {
@@ -34,6 +30,7 @@ export class WetransferUploadComponent extends Component<WetransferUploadProps, 
       this.setState({
          downloadUrl: null
       });
+      this.props.onNewUpload();
    }
 
    private onUploadClicked = async () => {
@@ -70,7 +67,7 @@ export class WetransferUploadComponent extends Component<WetransferUploadProps, 
 
             {this.state.downloadUrl === null && !this.state.loading ? (
                <Fragment>
-                  <Button onClick={this.onUploadClicked} variant="contained" style={{ width: '10rem' }}>
+                  <Button disabled={this.props.files.length === 0} onClick={this.onUploadClicked} variant="contained" style={{ width: '10rem' }}>
                      Upload
                   </Button>
                </Fragment>
