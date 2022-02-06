@@ -58,6 +58,7 @@
     "@types/axios": "^0.14.0",
     "@types/react-helmet": "^6.1.5",
     "@types/react-router": "^3.0.19",
-    "@types/webtorrent": "^0.109.3"
+    "@types/webtorrent": "^0.109.3",
+    "sass": "^1.49.7"
   }
 }

@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 
 import './App.css';
+import { BubblesComponent } from './components/bubbles.component';
 
 
 export default class App extends React.Component {
@@ -60,6 +61,8 @@ export default class App extends React.Component {
             </Routes>
           </BrowserRouter>
         </div>
+
+        <BubblesComponent/>
       </div>
     );
   }
