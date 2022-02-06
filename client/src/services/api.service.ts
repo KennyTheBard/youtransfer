@@ -26,35 +26,3 @@ export async function wetransferDownload(
 
    fileDownload(res.data, 'download.zip', 'application/zip');
 }
-
-// export async function webtorrentUpload(
-//    files: File[]
-// ) {
-//    const client = new WebTorrent();
-
-//    client.seed(files, (torrent) => {
-//       console.log('magnetURI: ', torrent.magnetURI);
-//       console.log('Client is seeding:', torrent.progress, torrent.length, torrent.received);
-//    })
-// }
-
-// export async function webtorrentDownload(
-//    magnetURI: string
-// ) {
-//    const client = new WebTorrent();
-
-//    client.add(magnetURI, (torrent) => {
-//       // Got torrent metadata!
-//       console.log('Client is downloading:', torrent.progress, torrent.length, torrent.received)
-
-//       torrent.on('done', () => {
-//          torrent.files.forEach(file => file.getBlob((err, blob) => {
-//             console.error(err);
-
-//             if (blob !== undefined) {
-//                fileDownload(blob, file.name, 'application/octet-stream');
-//             }
-//          }))
-//       })
-//    })
-// }

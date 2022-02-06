@@ -2,7 +2,6 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import { UploadComponent, UploadProps } from './components/upload.component';
 import {  WetransferDownloadComponent } from './components/wetransfer-download.component';
-import { WebtorrentDownloadComponent } from './components/webtorrent-download.component';
 import {
   BrowserRouter,
   Route,
@@ -55,9 +54,6 @@ export default class App extends React.Component {
             } />
             <Route path='/direct/:id/:hash/:key' element={
               <WetransferDownloadComponent alert={this.addAlert} />
-            } />
-            <Route path='/p2p/:magnet' element={
-              <WebtorrentDownloadComponent alert={this.addAlert} />
             } />
           </Routes>
         </BrowserRouter>

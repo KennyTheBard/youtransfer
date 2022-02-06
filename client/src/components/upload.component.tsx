@@ -1,7 +1,6 @@
 
 import { Component } from 'react';
 import { FileUploader } from 'react-drag-drop-files';
-import { WebtorrentUploadComponent } from './webtorrent-upload.component';
 import { WetransferUploadComponent } from './wetransfer-upload.component';
 
 
@@ -38,7 +37,6 @@ export class UploadComponent extends Component<UploadProps, any> {
                })
             }
             <WetransferUploadComponent files={this.state.files}/>
-            {/* <WebtorrentUploadComponent files={this.state.files}/> */}
          </div>
       )
    }
