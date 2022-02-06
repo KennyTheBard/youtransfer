@@ -1,7 +1,7 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import { UploadComponent, UploadProps } from './components/upload.component';
-import {  WetransferDownloadComponent } from './components/wetransfer-download.component';
+import { UploadComponent } from './components/upload.component';
+import { WetransferDownloadComponent } from './components/wetransfer-download.component';
 import {
   BrowserRouter,
   Route,
@@ -47,16 +47,19 @@ export default class App extends React.Component {
           <title>YouTransfer</title>
         </Helmet>
 
-        <BrowserRouter basename='/'>
-          <Routes>
-            <Route path='/' element={
-              <UploadComponent alert={this.addAlert} />
-            } />
-            <Route path='/direct/:id/:hash/:key' element={
-              <WetransferDownloadComponent alert={this.addAlert} />
-            } />
-          </Routes>
-        </BrowserRouter>
+        <div className='header-space'></div>
+        <div className='content-card'>
+          <BrowserRouter basename='/'>
+            <Routes>
+              <Route path='/' element={
+                <UploadComponent alert={this.addAlert} />
+              } />
+              <Route path='/direct/:id/:hash/:key' element={
+                <WetransferDownloadComponent alert={this.addAlert} />
+              } />
+            </Routes>
+          </BrowserRouter>
+        </div>
       </div>
     );
   }

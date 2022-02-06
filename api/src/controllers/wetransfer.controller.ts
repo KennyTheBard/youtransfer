@@ -21,6 +21,7 @@ export class WeTransferController {
     * POST /wt/upload
     */
    upload = async (req: Request, res: Response) => {
+      console.log('Request upload');
       const files = req.files;
 
       if (files === undefined) {
@@ -57,22 +58,30 @@ export class WeTransferController {
     * POST /wt/download
     */
    download = async (req: Request, res: Response) => {
+      console.log('Request download', req.body);
       const {
          id, hash, key: hexKey
       } = req.body;
       const key = Buffer.from(hexKey, 'hex');
 
-      const rs = (await wtDownload(id, hash));
-      const ws = new streams.WritableStream();
-      rs.pipe(ws);
+      try {
+         const rs = (await wtDownload(id, hash));
+         const ws = new streams.WritableStream();
+         
+         rs.pipe(ws);
+   
+         rs.on('end', () => ws.end());
+         await new Promise(resolve =>
+            ws.on('finish', () => resolve(null))
+         );
 
-      rs.on('end', () => ws.end());
-      await new Promise(resolve =>
-         ws.on('finish', () => resolve(null))
-      );
-
-
-      res.status(200)
-         .send(decrypt(key, ws.toBuffer()));
+         rs.unpipe(ws);
+   
+         res.status(200)
+            .send(decrypt(key, ws.toBuffer()));
+      } catch (e) {
+         res.status(500).send(e);
+      }
+      
    }
 }

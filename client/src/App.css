@@ -1,38 +1,76 @@
+body {
+  background: #8a2387; /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #f27121, #e94057, #8a2387); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #f27121,
+    #e94057,
+    #8a2387
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.header-space {
+  padding-top: 8rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.content-card {
+  background: #f9f9f9;
+  width: 50rem;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+}
+
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  height: 100%;
+  width: 100%;
+}
+
+.upload-container-header {
+  display: flex;
+  height: 100%;
+  padding: 0.7rem 0 0.7rem 0;
+  justify-content: center;
+}
+
+.upload-container-main {
+  flex: 1;
+}
+
+.upload-container-footer {
+  margin: 1rem 0 0 0;
+}
+
+.upload-container-row {
+  display: flex;
+  height: 100%;
+}
+
+.wetransfer-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.download-container {
+  margin: 2rem 0 2rem 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
 }

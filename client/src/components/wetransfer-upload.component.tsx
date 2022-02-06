@@ -1,26 +1,40 @@
 
-import { Component } from 'react';
+import { Fragment, Component } from 'react';
 import * as H from 'history';
 import { FileUploader } from 'react-drag-drop-files';
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import { WetransferMessage } from '../types/types';
 import { wetransferUpload } from '../services/api.service';
-
+import { LinearProgress } from '@mui/material';
 
 
 export interface WetransferUploadProps {
    // alert: (message: string) => void;
    // history: H.History;
    files: File[];
+   onUploadCompleted: () => void;
 }
 
 export class WetransferUploadComponent extends Component<WetransferUploadProps, any> {
 
    state: {
-      downloadUrl: string | null
+      downloadUrl: string | null;
+      loading: boolean;
    } = {
-         downloadUrl: null
+         downloadUrl: null,
+         loading: false
       };
+
+   constructor(props: WetransferUploadProps) {
+      super(props);
+      this.onNewUpload = this.onNewUpload.bind(this);
+   }
+
+   private onNewUpload = () => {
+      this.setState({
+         downloadUrl: null
+      });
+   }
 
    private onUploadClicked = async () => {
       const files = this.props.files;
@@ -29,23 +43,50 @@ export class WetransferUploadComponent extends Component<WetransferUploadProps, 
          return;
       }
 
+      this.setState({
+         loading: true
+      })
+
       const msg = await wetransferUpload(files);
+      this.props.onUploadCompleted();
 
       console.log(msg);
       const url = `${window.location.protocol}//${window.location.host}/direct/` +
          `${msg.id}/${msg.hash}/${msg.key}`;
 
-      console.log(url);
       this.setState({
-         downloadUrl: url
+         downloadUrl: url,
+         loading: false
       });
    }
 
    render() {
       return (
-         <div>
-            <Button onClick={this.onUploadClicked} variant="contained">Upload</Button>
-            {this.state.downloadUrl !== null ? this.state.downloadUrl : ''}
+         <div className="wetransfer-container">
+
+            {this.state.loading ? (
+               <CircularProgress />
+            ) : ''}
+
+            {this.state.downloadUrl === null && !this.state.loading ? (
+               <Fragment>
+                  <Button onClick={this.onUploadClicked} variant="contained" style={{ width: '10rem' }}>
+                     Upload
+                  </Button>
+               </Fragment>
+            ) : ''}
+
+            {this.state.downloadUrl !== null && !this.state.loading ? (
+               <Fragment>
+                  <Button onClick={this.onNewUpload} variant="contained" style={{ width: '10rem' }}>
+                     New upload
+                  </Button>
+                  <Button variant="contained" color="success" style={{ width: '10rem' }}
+                     onClick={() => { navigator.clipboard.writeText(this.state.downloadUrl!) }}>
+                     Copy link
+                  </Button>
+               </Fragment>
+            ) : ''}
          </div>
       )
    }

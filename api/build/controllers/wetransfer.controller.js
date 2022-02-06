@@ -26,6 +26,7 @@ class WeTransferController {
          * POST /wt/upload
          */
         this.upload = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            console.log('Request upload');
             const files = req.files;
             if (files === undefined) {
                 res.status(400).send();
@@ -55,15 +56,22 @@ class WeTransferController {
          * POST /wt/download
          */
         this.download = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            console.log('Request download', req.body);
             const { id, hash, key: hexKey } = req.body;
             const key = Buffer.from(hexKey, 'hex');
-            const rs = (yield (0, wetransfer_service_1.wtDownload)(id, hash));
-            const ws = new memory_streams_1.default.WritableStream();
-            rs.pipe(ws);
-            rs.on('end', () => ws.end());
-            yield new Promise(resolve => ws.on('finish', () => resolve(null)));
-            res.status(200)
-                .send((0, ecrypt_service_1.decrypt)(key, ws.toBuffer()));
+            try {
+                const rs = (yield (0, wetransfer_service_1.wtDownload)(id, hash));
+                const ws = new memory_streams_1.default.WritableStream();
+                rs.pipe(ws);
+                rs.on('end', () => ws.end());
+                yield new Promise(resolve => ws.on('finish', () => resolve(null)));
+                rs.unpipe(ws);
+                res.status(200)
+                    .send((0, ecrypt_service_1.decrypt)(key, ws.toBuffer()));
+            }
+            catch (e) {
+                res.status(500).send(e);
+            }
         });
         this.router.post('/upload', this.upload);
         this.router.post('/download', this.download);

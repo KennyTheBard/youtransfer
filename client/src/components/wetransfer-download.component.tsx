@@ -2,6 +2,8 @@
 import { useEffect } from 'react';
 import { wetransferDownload } from '../services/api.service';
 import { useParams } from 'react-router-dom';
+import { CircularProgress } from '@material-ui/core';
+import { LogoComponent } from './logo.component';
 
 
 export interface WetransferDownloadProps {
@@ -19,10 +21,10 @@ export function WetransferDownloadComponent(props: WetransferDownloadProps) {
    
 
    return (
-      <div>
-         <p>id {id}</p>
-         <p>hash {hash}</p>
-         <p>key {key}</p>
+      <div className="download-container">
+         <LogoComponent/>
+         <p>Your download will be ready any moment</p>
+         <CircularProgress/>
       </div>
    )
 }
