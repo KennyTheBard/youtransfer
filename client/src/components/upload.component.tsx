@@ -1,12 +1,8 @@
 
 import { Component } from 'react';
-import * as H from 'history';
 import { FileUploader } from 'react-drag-drop-files';
-import { Button } from '@mui/material';
-import { WtMessage } from '../types/types';
-import { wtUpload } from '../services/api.service';
-import { WeTransferComponent } from './wetransfer.component';
-
+import { WebtorrentUploadComponent } from './webtorrent-upload.component';
+import { WetransferUploadComponent } from './wetransfer-upload.component';
 
 
 export interface UploadProps {
@@ -16,15 +12,33 @@ export interface UploadProps {
 
 export class UploadComponent extends Component<UploadProps, any> {
 
-   componentDidMount() {
-      console.log('upload')
-   }
+   state: {
+      files: File[],
+   } = {
+         files: [],
+      };
+
+   private handleFileDropOrSelect = (files: FileList) => {
+      console.log(files);
+      this.setState({
+         files: [
+            ...this.state.files,
+            ...Array.from(files)
+         ]
+      });
+   };
 
    render() {
-
       return (
          <div>
-            <WeTransferComponent/>
+            <FileUploader handleChange={this.handleFileDropOrSelect} name="file" multiple={true} />
+            {
+               this.state.files.map((file: File, idx: number) => {
+                  return <div key={idx}>{file.name}</div>;
+               })
+            }
+            <WetransferUploadComponent files={this.state.files}/>
+            {/* <WebtorrentUploadComponent files={this.state.files}/> */}
          </div>
       )
    }

@@ -1,5 +1,5 @@
 
-export type WtMessage = {
+export type WetransferMessage = {
    id: string,
    state: string,
    transfer_type: number,
@@ -16,11 +16,11 @@ export type WtMessage = {
    message: string,
    number_of_downloads: number,
    display_name: string,
-   files: WtFile[],
-   recipients: WtRecipient[]
+   files: WetransferFile[],
+   recipients: WetransferRecipient[]
 }
 
-export type WtFile = {
+export type WetransferFile = {
    id: string,
    name: string,
    retries: number,
@@ -29,13 +29,13 @@ export type WtFile = {
    chunk_size: number
 }
 
-export type WtRecipient = {
+export type WetransferRecipient = {
    email: string,
    transfer_downloaded: boolean,
    bounced: boolean
 }
 
-export type WtUploadMeta = {
+export type WetransferUploadMeta = {
    id: string,
    hash: string,
    key: string
